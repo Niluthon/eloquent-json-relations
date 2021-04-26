@@ -52,15 +52,27 @@ class HasManyJson extends HasMany
     {
         $parentKeys = $this->getKeys($models, $this->localKey);
 
-        $this->query->where(function (Builder $query) use ($parentKeys) {
-            foreach ($parentKeys as $parentKey) {
-                if ($this->key) {
-                    $parentKey = $this->parentKeyToArray($parentKey);
-                }
+		//TODO Doesnt work on Postgres 13.2 because of closure wraps where statement in ()
 
-                $query->orWhereJsonContains($this->path, $parentKey);
-            }
-        });
+//        $this->query->where(function (Builder $query) use ($parentKeys) {
+//
+//            foreach ($parentKeys as $parentKey) {
+//                if ($this->key) {
+//                    $parentKey = $this->parentKeyToArray($parentKey);
+//                }
+//
+//                $query->orWhereJsonContains($this->path, $parentKey);
+//            }
+//        });
+
+		//TODO working solution
+		foreach ($parentKeys as $parentKey) {
+			if ($this->key) {
+				$parentKey = $this->parentKeyToArray($parentKey);
+			}
+
+			$this->orWhereJsonContains($this->path, $parentKey);
+		}
     }
 
     /**
